@@ -95,9 +95,9 @@ public class SLASettingsValueValidatorTest
         clear();
         loadValidTestElements(TimerSettingsValueValidatorTest.VALID_TIME_DURATIONS);
         loadValidTestElements(TimerSettingsValueValidatorTest.VALID_EXPRESSIONS);
-        loadInvalidTestElements(SLASettingsValueValidator.TimeDurationInvalid,
+        loadInvalidTestElements(SLASettingsValueValidator.TIME_DURATION_INVALID,
                                 INVALID_TIME_DURATIONS);
-        loadInvalidTestElements(SLASettingsValueValidator.TimeDurationInvalid,
+        loadInvalidTestElements(SLASettingsValueValidator.TIME_DURATION_INVALID,
                                 TimerSettingsValueValidatorTest.INVALID_EXPRESSIONS);
         testElements.forEach(testElement -> {
             value = testElement.getValue();

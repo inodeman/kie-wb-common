@@ -31,8 +31,6 @@ import static org.mockito.Mockito.when;
 public class SLASettingsFieldEditorPresenterTest
         extends FieldEditorPresenterBaseTest<String, SLASettingsFieldEditorPresenter, SLASettingsFieldEditorPresenter.View> {
 
-    private static final String VALUE_1 = "VALUE_1";
-
     @Before
     public void setUp() {
         super.setUp();

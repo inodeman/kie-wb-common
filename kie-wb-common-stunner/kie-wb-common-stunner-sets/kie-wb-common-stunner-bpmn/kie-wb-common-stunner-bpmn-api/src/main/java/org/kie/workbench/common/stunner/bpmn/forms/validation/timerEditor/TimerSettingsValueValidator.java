@@ -116,7 +116,7 @@ public class TimerSettingsValueValidator
     }
 
     public static boolean looksLikeExpression(final String value) {
-        return hasSomething(value) && (value.startsWith("#{") || value.contains("{") || value.contains("}"));
+        return hasSomething(value) && (value.startsWith("#{") && value.endsWith("}"));
     }
 
     public static boolean isValidExpression(final String value) {
