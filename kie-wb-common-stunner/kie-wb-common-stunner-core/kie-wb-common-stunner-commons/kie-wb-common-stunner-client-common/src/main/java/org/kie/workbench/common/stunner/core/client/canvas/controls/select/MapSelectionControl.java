@@ -26,6 +26,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import com.google.gwt.core.client.GWT;
 import org.kie.workbench.common.stunner.core.client.canvas.AbstractCanvas;
 import org.kie.workbench.common.stunner.core.client.canvas.AbstractCanvasHandler;
 import org.kie.workbench.common.stunner.core.client.canvas.controls.AbstractCanvasHandlerControl;
@@ -82,8 +83,11 @@ public final class MapSelectionControl<H extends AbstractCanvasHandler>
                     final String canvasRootUUID = getRootUUID();
                     fireCanvasClear();
                     if (null != canvasRootUUID) {
+                        long startTime = System.currentTimeMillis();
                         selectionEventConsumer.accept(new CanvasSelectionEvent(canvasHandler,
                                                                                canvasRootUUID));
+                        long endTime = System.currentTimeMillis();
+                        GWT.log("Selection Empty took : " + (endTime - startTime));
                     }
                 }
             }
@@ -191,11 +195,15 @@ public final class MapSelectionControl<H extends AbstractCanvasHandler>
     }
 
     public SelectionControl<H, Element> select(final Collection<String> uuids) {
+        GWT.log("Select Start");
+        long startTime = System.currentTimeMillis();
         uuids.stream()
                 .filter(itemsRegistered())
                 .forEach(uuid -> items.put(uuid, true));
         updateViewShapesState(getSelectedItems());
         fireSelectedItemsEvent();
+        long endTime = System.currentTimeMillis();
+        GWT.log("Selection Elements took : " + (endTime - startTime));
         return this;
     }
 
@@ -261,6 +269,10 @@ public final class MapSelectionControl<H extends AbstractCanvasHandler>
         checkNotNull("event",
                      event);
         if (null == canvasHandler) {
+            return;
+        }
+
+        if (event.isDragging()) { // GPS FIX
             return;
         }
         final boolean isSameCtxt = canvasHandler.equals(event.getCanvasHandler());

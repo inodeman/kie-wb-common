@@ -23,6 +23,7 @@ import javax.enterprise.event.Event;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kie.workbench.common.stunner.core.client.api.SessionManager;
 import org.kie.workbench.common.stunner.core.client.canvas.AbstractCanvasHandler;
 import org.kie.workbench.common.stunner.core.client.canvas.event.selection.CanvasClearSelectionEvent;
 import org.kie.workbench.common.stunner.core.client.command.CanvasCommandFactory;
@@ -43,6 +44,9 @@ public class DeleteSelectionSessionCommandTest extends BaseSessionCommandKeyboar
 
     @Mock
     private Event<CanvasClearSelectionEvent> canvasClearSelectionEventEvent;
+
+    @Mock
+    private SessionManager sessionManager;
 
     @Mock
     private ClientSessionCommand.Callback callback;
@@ -67,14 +71,15 @@ public class DeleteSelectionSessionCommandTest extends BaseSessionCommandKeyboar
         when(canvasCommandFactoryInstance.select(eq(qualifier))).thenReturn(canvasCommandFactoryInstance);
         when(canvasCommandFactoryInstance.isUnsatisfied()).thenReturn(false);
         when(canvasCommandFactoryInstance.get()).thenReturn(canvasCommandFactory);
+        when(sessionManager.getCurrentSession()).thenReturn(session);
     }
 
     @Override
     protected AbstractClientSessionCommand<EditorSession> getCommand() {
-        return new DeleteSelectionSessionCommand(sessionCommandManager,
+        return DeleteSelectionSessionCommand.getInstance(sessionCommandManager,
                                                  canvasCommandFactoryInstance,
                                                  canvasClearSelectionEventEvent,
-                                                 definitionUtils);
+                                                 definitionUtils, sessionManager);
     }
 
     @Test

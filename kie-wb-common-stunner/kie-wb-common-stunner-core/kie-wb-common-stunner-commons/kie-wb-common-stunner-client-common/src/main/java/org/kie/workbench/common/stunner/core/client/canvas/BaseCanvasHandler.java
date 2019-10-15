@@ -21,6 +21,7 @@ import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.logging.client.LogConfiguration;
 import org.kie.workbench.common.stunner.core.api.DefinitionManager;
 import org.kie.workbench.common.stunner.core.client.ShapeSet;
@@ -29,6 +30,7 @@ import org.kie.workbench.common.stunner.core.client.canvas.controls.actions.Text
 import org.kie.workbench.common.stunner.core.client.canvas.controls.actions.TextPropertyProviderFactory;
 import org.kie.workbench.common.stunner.core.client.canvas.util.CanvasLayoutUtils;
 import org.kie.workbench.common.stunner.core.client.service.ClientRuntimeError;
+import org.kie.workbench.common.stunner.core.client.session.command.impl.PasteSelectionSessionCommand;
 import org.kie.workbench.common.stunner.core.client.shape.ElementShape;
 import org.kie.workbench.common.stunner.core.client.shape.Lifecycle;
 import org.kie.workbench.common.stunner.core.client.shape.MutationContext;
@@ -229,7 +231,13 @@ public abstract class BaseCanvasHandler<D extends Diagram, C extends AbstractCan
                                        mutationContext);
         }
 
-        this.applyElementMutation(graphShape, candidate);
+        if (!PasteSelectionSessionCommand.isLocked()) { // GPS 2 FIX
+            GWT.log("GPS 2 NOT FIX");
+            this.applyElementMutation(graphShape, candidate);
+        } else {
+            GWT.log("GPS 2 FIX");
+
+        }
     }
 
     protected void applyElementMutation(final Shape shape, final Element candidate) {

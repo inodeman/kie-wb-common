@@ -17,6 +17,7 @@ package org.kie.workbench.common.stunner.client.widgets.toolbar.command;
 
 import java.lang.annotation.Annotation;
 
+import com.google.gwt.core.client.GWT;
 import org.gwtbootstrap3.client.ui.constants.IconRotate;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.kie.workbench.common.stunner.client.widgets.resources.i18n.StunnerWidgetsConstants;
@@ -45,10 +46,12 @@ public abstract class AbstractToolbarCommand<S extends ClientSession, C extends 
     protected AbstractToolbarCommand(final DefinitionUtils definitionUtils,
                                      final ManagedInstance<C> commands,
                                      final ClientTranslationService translationService) {
+        GWT.log("Abstract Tool Bar Command New 1:" + this.getClass());
         this.uuid = UUID.uuid();
         this.definitionUtils = definitionUtils;
         this.commands = commands;
         this.translationService = translationService;
+        GWT.log("Abstract Tool Bar Command New:" + this.getClass());
     }
 
     protected abstract boolean requiresConfirm();
@@ -64,11 +67,15 @@ public abstract class AbstractToolbarCommand<S extends ClientSession, C extends 
         command.listen(this::checkState);
         command.bind(session);
         checkState();
+        GWT.log("Abstract Tool Bar Command Initialize:" + this.getClass());
+        //GWT.log("Abstract Tool Bar Command Initialize session:" + session.getSessionUUID());
+
         return this;
     }
 
     @Override
     public void execute() {
+        GWT.log("Abstract Tool Bar Command execute:" + this.getClass());
         if (requiresConfirm()) {
             this.executeWithConfirm(noOpCallback);
         } else {
@@ -77,6 +84,7 @@ public abstract class AbstractToolbarCommand<S extends ClientSession, C extends 
     }
 
     public <V> void execute(final ClientSessionCommand.Callback<V> callback) {
+        GWT.log("Abstract Tool Bar Command execute with callback:" + this.getClass());
         if (requiresConfirm()) {
             this.executeWithConfirm(callback);
         } else {
@@ -100,9 +108,13 @@ public abstract class AbstractToolbarCommand<S extends ClientSession, C extends 
                                                                             noCommand,
                                                                             noCommand);
         popup.show();
+        GWT.log("Abstract Tool Bar Command execute with confirm:" + this.getClass());
     }
 
     protected void checkState() {
+        GWT.log("Abstract Tool Bar Command checkstate:" + this.getClass());
+        GWT.log("Abstract Tool Bar Command checkstate enabled:" + command.isEnabled());
+
         if (command.isEnabled()) {
             enable();
         } else {
@@ -126,6 +138,7 @@ public abstract class AbstractToolbarCommand<S extends ClientSession, C extends 
                                                                             noCommand,
                                                                             noCommand);
         popup.show();
+        GWT.log("Abstract Tool Bar Command execute with confirm 2:" + this.getClass());
     }
 
     @Override
@@ -171,10 +184,12 @@ public abstract class AbstractToolbarCommand<S extends ClientSession, C extends 
     }
 
     protected void disable() {
+        GWT.log("Toolbar: " + toolbar);
         toolbar.disable(this);
     }
 
     private <V> void executeWithNoConfirm(final ClientSessionCommand.Callback<V> callback) {
+        GWT.log("Abstract Tool Bar Command execute with no confirm:" + this.getClass());
         this.command.execute(callback);
     }
 

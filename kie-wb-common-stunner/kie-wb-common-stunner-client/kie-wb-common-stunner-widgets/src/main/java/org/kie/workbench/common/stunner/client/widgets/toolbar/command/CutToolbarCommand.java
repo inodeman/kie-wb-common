@@ -20,6 +20,7 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Any;
 import javax.inject.Inject;
 
+import com.google.gwt.core.client.GWT;
 import org.gwtbootstrap3.client.ui.constants.IconType;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.kie.workbench.common.stunner.core.client.i18n.ClientTranslationService;
@@ -38,6 +39,7 @@ public class CutToolbarCommand extends AbstractToolbarCommand<EditorSession, Cut
         super(definitionUtils,
               command,
               translationService);
+        GWT.log("New Cut Toolbar");
     }
 
     @Override

@@ -15,8 +15,10 @@
  */
 package org.kie.workbench.common.stunner.core.client.canvas.command;
 
+import com.google.gwt.core.client.GWT;
 import org.kie.workbench.common.stunner.core.client.canvas.AbstractCanvasHandler;
 import org.kie.workbench.common.stunner.core.client.command.CanvasViolation;
+import org.kie.workbench.common.stunner.core.client.session.command.impl.PasteSelectionSessionCommand;
 import org.kie.workbench.common.stunner.core.client.shape.MutationContext;
 import org.kie.workbench.common.stunner.core.client.util.ShapeUtils;
 import org.kie.workbench.common.stunner.core.command.CommandResult;
@@ -41,6 +43,14 @@ public class SetCanvasConnectionCommand extends AbstractCanvasCommand {
         ShapeUtils.applyConnections(edge,
                                     context,
                                     MutationContext.STATIC);
+
+        if (PasteSelectionSessionCommand.isLocked()) { // GPS 2 FIX
+            GWT.log("GPS 2 FIX");
+            return buildResult(); //GPS FIX
+        } else {
+            GWT.log("GPS 2 NOT FIX");
+        }
+
         if (null != source) {
             context.notifyCanvasElementUpdated(source);
         }

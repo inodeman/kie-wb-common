@@ -28,6 +28,7 @@ import javax.annotation.PreDestroy;
 import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
+import com.google.gwt.core.client.GWT;
 import org.jboss.errai.common.client.api.IsElement;
 import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jboss.errai.databinding.client.BindableProxy;
@@ -89,7 +90,7 @@ public class FormDisplayer implements FormDisplayerView.Presenter,
                           final RenderMode renderMode) {
 
         final List<String> previousExpandedCollapses = new ArrayList<>();
-
+        GWT.log("Do Render at Form Displayer");
         if (renderer.isInitialized()) {
             // Collecting expanded collapses from current form to synchronize the new form collapses
             renderer.getCurrentForm().getFields()

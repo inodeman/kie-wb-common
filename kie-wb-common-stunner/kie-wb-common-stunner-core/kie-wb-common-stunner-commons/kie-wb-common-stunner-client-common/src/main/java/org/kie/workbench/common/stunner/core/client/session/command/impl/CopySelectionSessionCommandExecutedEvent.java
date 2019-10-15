@@ -16,6 +16,11 @@
 
 package org.kie.workbench.common.stunner.core.client.session.command.impl;
 
+import javax.enterprise.context.Dependent;
+import javax.enterprise.inject.Default;
+import javax.inject.Inject;
+
+import com.google.gwt.core.client.GWT;
 import org.kie.workbench.common.stunner.core.client.session.command.AbstractClientSessionCommandExecutedEvent;
 import org.kie.workbench.common.stunner.core.client.session.impl.EditorSession;
 
@@ -25,5 +30,6 @@ public class CopySelectionSessionCommandExecutedEvent extends AbstractClientSess
                                                     final EditorSession clientFullSession) {
         super(executedCommand,
               clientFullSession);
+        GWT.log("CopySelectionSessionCommandExecutedEvent");
     }
 }

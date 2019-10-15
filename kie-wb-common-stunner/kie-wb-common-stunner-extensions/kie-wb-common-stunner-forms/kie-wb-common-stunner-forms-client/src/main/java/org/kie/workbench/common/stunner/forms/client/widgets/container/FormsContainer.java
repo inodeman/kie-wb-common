@@ -28,6 +28,7 @@ import javax.enterprise.event.Event;
 import javax.enterprise.inject.Any;
 import javax.inject.Inject;
 
+import com.google.gwt.core.client.GWT;
 import org.jboss.errai.common.client.api.IsElement;
 import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
@@ -65,7 +66,7 @@ public class FormsContainer implements IsElement {
                        final Path diagramPath,
                        final FieldChangeHandler changeHandler,
                        final RenderMode renderMode) {
-
+        GWT.log("Rendering at Forms Container: " + domainObjectUUID);
         FormDisplayer displayer = getDisplayer(graphUuid, domainObjectUUID);
 
         displayer.render(domainObjectUUID, domainObject, diagramPath, changeHandler, renderMode);

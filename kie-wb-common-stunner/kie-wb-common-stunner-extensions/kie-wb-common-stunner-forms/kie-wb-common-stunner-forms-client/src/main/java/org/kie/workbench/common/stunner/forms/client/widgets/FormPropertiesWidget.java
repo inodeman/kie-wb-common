@@ -26,11 +26,13 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.logging.client.LogConfiguration;
 import org.jboss.errai.common.client.api.IsElement;
 import org.jboss.errai.common.client.dom.HTMLElement;
 import org.jboss.errai.ui.client.local.spi.TranslationService;
 import org.kie.workbench.common.forms.dynamic.service.shared.RenderMode;
+import org.kie.workbench.common.stunner.core.client.canvas.event.selection.CanvasSelectionEvent;
 import org.kie.workbench.common.stunner.core.client.session.ClientSession;
 import org.kie.workbench.common.stunner.core.client.session.impl.EditorSession;
 import org.kie.workbench.common.stunner.core.diagram.Diagram;
@@ -151,10 +153,19 @@ public class FormPropertiesWidget implements IsElement,
         formSessionHandler.show(callback);
     }
 
+    private String lastId = ""; // GPS FIX
+
     private void show(final String graphUuid,
                       final Element<? extends Definition<?>> element,
                       final Command callback) {
         if (element != null) {
+
+            if (lastId.equals(element.getUUID()) && CanvasSelectionEvent.improvePerformance) { // GPS FIX
+                GWT.log("FormPropertiesWidget Returning without rendering form. Same Id: " + lastId);
+                return;
+            }
+            GWT.log("FormPropertiesWidget Rendering form. Id: " + element.getUUID());
+
             final String uuid = element.getUUID();
             final Diagram<?, ?> diagram = formSessionHandler.getDiagram();
             if (Objects.isNull(diagram)) {
@@ -191,6 +202,7 @@ public class FormPropertiesWidget implements IsElement,
                                   }, renderMode);
             final String name = definitionUtils.getName(definition);
             propertiesOpenedEvent.fire(new FormPropertiesOpened(formSessionHandler.getSession(), uuid, name));
+            lastId = element.getUUID(); //GPS FIX
         }
     }
 

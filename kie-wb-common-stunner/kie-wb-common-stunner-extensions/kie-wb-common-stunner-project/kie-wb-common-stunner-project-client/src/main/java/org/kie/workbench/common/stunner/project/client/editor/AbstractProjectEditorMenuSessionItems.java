@@ -24,6 +24,7 @@ import java.util.function.Consumer;
 
 import javax.annotation.PreDestroy;
 
+import com.google.gwt.core.client.GWT;
 import org.kie.workbench.common.stunner.core.client.i18n.ClientTranslationService;
 import org.kie.workbench.common.stunner.core.client.session.ClientSession;
 import org.kie.workbench.common.stunner.core.client.session.command.ClientSessionCommand;
@@ -142,6 +143,7 @@ public abstract class AbstractProjectEditorMenuSessionItems<BUILDER extends Abst
                 .bind(session)
                 .getCommands()
                 .visit((type, command) -> {
+                    GWT.log("Pre Listen: " + command.getClass());
                     command.listen(() -> Optional.ofNullable(menuItems.get(type)).ifPresent(item -> item.setEnabled(command.isEnabled())));
                 });
         // Default disabled items.
@@ -209,6 +211,7 @@ public abstract class AbstractProjectEditorMenuSessionItems<BUILDER extends Abst
 
     public void setItemEnabled(final Class<? extends ClientSessionCommand> type,
                                final boolean enabled) {
+        GWT.log("Set Item Enabled: " + enabled + " - " + type.getName());
         if (menuItems.containsKey(type)) {
             menuItems.get(type).setEnabled(enabled);
         }

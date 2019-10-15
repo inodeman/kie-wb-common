@@ -35,6 +35,7 @@ import javax.inject.Inject;
 import com.ait.lienzo.client.core.shape.wires.ILocationAcceptor;
 import com.ait.lienzo.client.core.shape.wires.WiresContainer;
 import com.ait.lienzo.client.core.shape.wires.WiresManager;
+import com.google.gwt.core.client.GWT;
 import org.kie.workbench.common.stunner.client.lienzo.canvas.wires.WiresCanvas;
 import org.kie.workbench.common.stunner.core.client.canvas.AbstractCanvas;
 import org.kie.workbench.common.stunner.core.client.canvas.AbstractCanvasHandler;
@@ -50,6 +51,7 @@ import org.kie.workbench.common.stunner.core.client.command.CanvasCommandFactory
 import org.kie.workbench.common.stunner.core.client.command.CanvasCommandManager;
 import org.kie.workbench.common.stunner.core.client.command.CanvasViolation;
 import org.kie.workbench.common.stunner.core.client.event.keyboard.KeyboardEvent;
+import org.kie.workbench.common.stunner.core.client.session.command.impl.PasteSelectionSessionCommand;
 import org.kie.workbench.common.stunner.core.client.session.impl.EditorSession;
 import org.kie.workbench.common.stunner.core.client.shape.Shape;
 import org.kie.workbench.common.stunner.core.client.shape.view.HasEventHandlers;
@@ -126,7 +128,10 @@ public class LocationControlImpl
     }
 
     private void handleArrowKeys(final KeyboardEvent.Key... keys) {
+        GWT.log("Moving Shapes Begin: ");
 
+        PasteSelectionSessionCommand.improveMoving = true;
+        long startTime = System.currentTimeMillis();
         final int selectedIDsCount = selectedIDs.size();
 
         if (selectedIDsCount == 0) {
@@ -174,6 +179,10 @@ public class LocationControlImpl
         }
 
         move(moveNodes.toArray(new Element[]{}), movePositions.toArray(new Point2D[]{}));
+        long endTime = System.currentTimeMillis();
+        GWT.log("Moving Shapes Took: " + (endTime - startTime));
+        PasteSelectionSessionCommand.improveMoving = false;
+
     }
 
     @Override
@@ -233,7 +242,7 @@ public class LocationControlImpl
                         public void start(DragEvent event) {
                             if (Objects.nonNull(selectionEvent)) {
                                 //select the moving shape, if not
-                                selectionEvent.fire(new CanvasSelectionEvent(canvasHandler, shape.getUUID()));
+                                selectionEvent.fire(new CanvasSelectionEvent(canvasHandler, shape.getUUID(), true)); // GPS FIX
                             }
                         }
 

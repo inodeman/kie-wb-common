@@ -17,7 +17,9 @@
 package org.kie.workbench.common.stunner.core.client.session.command.impl;
 
 import javax.enterprise.event.Observes;
+import javax.enterprise.event.Reception;
 
+import com.google.gwt.core.client.GWT;
 import org.kie.workbench.common.stunner.core.client.canvas.event.registration.CanvasElementsClearEvent;
 import org.kie.workbench.common.stunner.core.client.canvas.event.selection.CanvasClearSelectionEvent;
 import org.kie.workbench.common.stunner.core.client.canvas.event.selection.CanvasSelectionEvent;
@@ -27,6 +29,10 @@ import org.kie.workbench.common.stunner.core.client.session.command.AbstractClie
 import static org.kie.soup.commons.validation.PortablePreconditions.checkNotNull;
 
 public abstract class AbstractSelectionAwareSessionCommand<S extends ClientSession> extends AbstractClientSessionCommand<S> {
+
+    public AbstractSelectionAwareSessionCommand() {
+        super(true);
+    }
 
     public AbstractSelectionAwareSessionCommand(final boolean enabled) {
         super(enabled);

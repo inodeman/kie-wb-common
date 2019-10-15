@@ -20,14 +20,18 @@ import java.util.logging.Logger;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Event;
+import javax.enterprise.inject.Any;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 
+import org.jboss.errai.ioc.client.api.ManagedInstance;
+import org.kie.workbench.common.stunner.core.client.api.SessionManager;
 import org.kie.workbench.common.stunner.core.client.canvas.AbstractCanvasHandler;
 import org.kie.workbench.common.stunner.core.client.canvas.controls.ClipboardControl;
 import org.kie.workbench.common.stunner.core.client.canvas.event.registration.CanvasElementsClearEvent;
 import org.kie.workbench.common.stunner.core.client.canvas.event.selection.CanvasClearSelectionEvent;
 import org.kie.workbench.common.stunner.core.client.canvas.event.selection.CanvasSelectionEvent;
+import org.kie.workbench.common.stunner.core.client.command.CanvasCommandFactory;
 import org.kie.workbench.common.stunner.core.client.command.CanvasViolation;
 import org.kie.workbench.common.stunner.core.client.command.SessionCommandManager;
 import org.kie.workbench.common.stunner.core.client.event.keyboard.KeyboardEvent.Key;
@@ -35,6 +39,7 @@ import org.kie.workbench.common.stunner.core.client.session.ClientSession;
 import org.kie.workbench.common.stunner.core.client.session.Session;
 import org.kie.workbench.common.stunner.core.client.session.impl.EditorSession;
 import org.kie.workbench.common.stunner.core.command.Command;
+import org.kie.workbench.common.stunner.core.util.DefinitionUtils;
 
 import static org.kie.workbench.common.stunner.core.client.canvas.controls.keyboard.KeysMatcher.doKeysMatch;
 
@@ -45,7 +50,7 @@ import static org.kie.workbench.common.stunner.core.client.canvas.controls.keybo
 @Default
 public class CutSelectionSessionCommand extends AbstractSelectionAwareSessionCommand<EditorSession> {
 
-    private final CopySelectionSessionCommand copySelectionSessionCommand;
+    private CopySelectionSessionCommand copySelectionSessionCommand;
     private final DeleteSelectionSessionCommand deleteSelectionSessionCommand;
     private final Event<CutSelectionSessionCommandExecutedEvent> commandExecutedEvent;
     private static Logger LOGGER = Logger.getLogger(CopySelectionSessionCommand.class.getName());
@@ -55,29 +60,35 @@ public class CutSelectionSessionCommand extends AbstractSelectionAwareSessionCom
     protected CutSelectionSessionCommand() {
         this(null,
              null,
-             null,
-             null);
+             null, null, null, null);
     }
 
     @Inject
-    public CutSelectionSessionCommand(final CopySelectionSessionCommand copySelectionSessionCommand,
-                                      final DeleteSelectionSessionCommand deleteSelectionSessionCommand,
+    public CutSelectionSessionCommand(
                                       final @Session SessionCommandManager<AbstractCanvasHandler> sessionCommandManager,
-                                      final Event<CutSelectionSessionCommandExecutedEvent> commandExecutedEvent) {
+                                      final Event<CutSelectionSessionCommandExecutedEvent> commandExecutedEvent,
+                                      final @Any ManagedInstance<CanvasCommandFactory<AbstractCanvasHandler>> canvasCommandFactoryInstance,
+                                      final Event<CanvasClearSelectionEvent> clearSelectionEvent,
+                                      final DefinitionUtils definitionUtils,
+                                      final SessionManager sessionManager) {
         super(true);
-        this.copySelectionSessionCommand = copySelectionSessionCommand;
-        this.deleteSelectionSessionCommand = deleteSelectionSessionCommand;
+        this.copySelectionSessionCommand = CopySelectionSessionCommand.getInstance(sessionManager);
+
+        this.deleteSelectionSessionCommand = DeleteSelectionSessionCommand.getInstance(sessionCommandManager, canvasCommandFactoryInstance, clearSelectionEvent, definitionUtils, sessionManager);
         this.sessionCommandManager = sessionCommandManager;
         this.commandExecutedEvent = commandExecutedEvent;
     }
 
     @Override
     public void bind(final EditorSession session) {
-        super.bind(session);
-        copySelectionSessionCommand.bind(session);
-        deleteSelectionSessionCommand.bind(session);
         session.getKeyboardControl().addKeyShortcutCallback(this::onKeyDownEvent);
+
+        super.bind(session);
         this.clipboardControl = session.getClipboardControl();
+    }
+
+    public void setCopySelectionSessionCommand(CopySelectionSessionCommand copySelectionSessionCommand) {
+        this.copySelectionSessionCommand = copySelectionSessionCommand;
     }
 
     @Override

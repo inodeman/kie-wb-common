@@ -16,6 +16,7 @@
 
 package org.kie.workbench.common.stunner.core.client.session.command.impl;
 
+import java.io.Serializable;
 import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -25,6 +26,8 @@ import javax.enterprise.event.Event;
 import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 
+import com.google.gwt.core.client.GWT;
+import org.kie.workbench.common.stunner.core.client.api.SessionManager;
 import org.kie.workbench.common.stunner.core.client.canvas.AbstractCanvas;
 import org.kie.workbench.common.stunner.core.client.canvas.AbstractCanvasHandler;
 import org.kie.workbench.common.stunner.core.client.canvas.controls.ClipboardControl;
@@ -46,9 +49,10 @@ import static org.kie.workbench.common.stunner.core.client.canvas.controls.keybo
 /**
  * This session command obtains the selected elements on session and copy the elements to a clipboard.
  */
+
 @Dependent
 @Default
-public class CopySelectionSessionCommand extends AbstractSelectionAwareSessionCommand<EditorSession> {
+public class CopySelectionSessionCommand extends AbstractSelectionAwareSessionCommand<EditorSession> implements Serializable {
 
     private static Logger LOGGER = Logger.getLogger(CopySelectionSessionCommand.class.getName());
 
@@ -57,13 +61,27 @@ public class CopySelectionSessionCommand extends AbstractSelectionAwareSessionCo
     private ClipboardControl<Element, AbstractCanvas, ClientSession> clipboardControl;
 
     public CopySelectionSessionCommand() {
-        this(null);
+        this(null, null);
+        GWT.log("Constructor::null");
     }
 
     @Inject
-    public CopySelectionSessionCommand(final Event<CopySelectionSessionCommandExecutedEvent> commandExecutedEvent) {
+    public CopySelectionSessionCommand(final Event<CopySelectionSessionCommandExecutedEvent> commandExecutedEvent, final SessionManager sessionManager) {
         super(true);
+//        GWT.log("Command Executed Event class: " + commandExecutedEvent.getClass());
+        //GWT.log("Command Executed Event: " + commandExecutedEvent.hashCode());
+        GWT.log("New Copy Session Command: " + this.hashCode());
+        LOGGER.info("New Copy Session Command: " + this.hashCode());
         this.commandExecutedEvent = commandExecutedEvent;
+        SessionSingletonCommandsFactory.createOrPut(this, sessionManager);
+    }
+
+    public static CopySelectionSessionCommand getInstance(SessionManager sessionManager) {
+        return (CopySelectionSessionCommand) SessionSingletonCommandsFactory.getInstanceCopy(null, sessionManager);
+    }
+
+    public static CopySelectionSessionCommand getInstance(final Event<CopySelectionSessionCommandExecutedEvent> commandExecutedEvent, SessionManager sessionManager) {
+        return (CopySelectionSessionCommand) SessionSingletonCommandsFactory.getInstanceCopy(commandExecutedEvent, sessionManager);
     }
 
     @Override
@@ -75,6 +93,9 @@ public class CopySelectionSessionCommand extends AbstractSelectionAwareSessionCo
 
     @Override
     public boolean accepts(final ClientSession session) {
+        GWT.log("Accepts: " + this.getClass());
+        GWT.log("Accepts Session: " + session.getClass());
+
         return session instanceof EditorSession;
     }
 
@@ -94,8 +115,11 @@ public class CopySelectionSessionCommand extends AbstractSelectionAwareSessionCo
 
     @Override
     public <V> void execute(final Callback<V> callback) {
-        if (null != getSession().getSelectionControl()) {
+        GWT.log("Copying....");
+        if (getSession() != null && null != getSession().getSelectionControl()) {
             try {
+                GWT.log("Copying 2....");
+
                 //for now just copy Nodes not Edges
                 final SelectionControl<AbstractCanvasHandler, Element> selectionControl = getSession().getSelectionControl();
 
@@ -130,6 +154,7 @@ public class CopySelectionSessionCommand extends AbstractSelectionAwareSessionCo
                 return;
             }
         }
+        GWT.log("Copying 3....");
     }
 
     @Override
@@ -140,6 +165,8 @@ public class CopySelectionSessionCommand extends AbstractSelectionAwareSessionCo
 
     @Override
     protected void handleCanvasSelectionEvent(final CanvasSelectionEvent event) {
+        GWT.log("Copy Selecion Session Command onCanvasSelectionEvent: " + this.hashCode());
+
         if (event.getIdentifiers().isEmpty() || onlyCanvasRootSelected(event)) {
             enable(false);
         } else {

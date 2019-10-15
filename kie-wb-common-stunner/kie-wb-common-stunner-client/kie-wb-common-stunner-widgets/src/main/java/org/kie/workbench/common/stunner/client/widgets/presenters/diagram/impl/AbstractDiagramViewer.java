@@ -16,6 +16,7 @@
 
 package org.kie.workbench.common.stunner.client.widgets.presenters.diagram.impl;
 
+import com.google.gwt.core.client.GWT;
 import org.kie.workbench.common.stunner.client.widgets.presenters.canvas.AbstractCanvasViewer;
 import org.kie.workbench.common.stunner.client.widgets.presenters.diagram.DiagramViewer;
 import org.kie.workbench.common.stunner.client.widgets.views.WidgetWrapperView;
@@ -25,6 +26,7 @@ import org.kie.workbench.common.stunner.core.client.canvas.CanvasPanel;
 import org.kie.workbench.common.stunner.core.client.canvas.CanvasSettings;
 import org.kie.workbench.common.stunner.core.client.preferences.StunnerPreferencesRegistries;
 import org.kie.workbench.common.stunner.core.client.service.ClientRuntimeError;
+import org.kie.workbench.common.stunner.core.client.session.command.impl.PasteSelectionSessionCommand;
 import org.kie.workbench.common.stunner.core.command.CommandResult;
 import org.kie.workbench.common.stunner.core.command.util.CommandUtils;
 import org.kie.workbench.common.stunner.core.diagram.Diagram;
@@ -60,12 +62,17 @@ public abstract class AbstractDiagramViewer<D extends Diagram, H extends Abstrac
     @SuppressWarnings("unchecked")
     public void open(final D diagram,
                      final DiagramViewer.DiagramViewerCallback<D> callback) {
+        long startTime = System.currentTimeMillis();
+        PasteSelectionSessionCommand.skipCanvasLoading = true; // GPS 2 FIX
         final StunnerDiagramEditorPreferences editorPreferences = getPreferences(diagram);
         final boolean isHiDPIEnabled = null != editorPreferences && editorPreferences.isHiDPIEnabled();
         final CanvasSettings settings = new CanvasSettings(isHiDPIEnabled);
         this.open(diagram,
                   settings,
                   callback);
+        PasteSelectionSessionCommand.skipCanvasLoading = false; // GPS 2 FIX
+        long endTime = System.currentTimeMillis();
+        GWT.log("Loading Took: " + (endTime - startTime));
     }
 
     @Override

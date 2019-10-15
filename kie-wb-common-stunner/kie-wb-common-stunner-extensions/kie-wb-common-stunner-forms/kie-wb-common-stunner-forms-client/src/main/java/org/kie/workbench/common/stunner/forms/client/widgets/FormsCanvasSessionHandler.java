@@ -24,9 +24,12 @@ import javax.enterprise.context.Dependent;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Timer;
 import org.kie.workbench.common.forms.dynamic.service.shared.RenderMode;
 import org.kie.workbench.common.stunner.core.api.DefinitionManager;
 import org.kie.workbench.common.stunner.core.client.canvas.AbstractCanvasHandler;
+import org.kie.workbench.common.stunner.core.client.canvas.CanvasHandler;
 import org.kie.workbench.common.stunner.core.client.canvas.controls.SelectionControl;
 import org.kie.workbench.common.stunner.core.client.canvas.event.selection.CanvasSelectionEvent;
 import org.kie.workbench.common.stunner.core.client.canvas.event.selection.DomainObjectSelectionEvent;
@@ -171,13 +174,33 @@ public class FormsCanvasSessionHandler {
     }
 
     void onCanvasSelectionEvent(@Observes CanvasSelectionEvent event) {
+        GWT.log("On Canvas Selection Event Form Canvas Session Handler");
         checkNotNull("event",
                      event);
+
+        if (event.isDragging()) { // GPS FIX
+            return;
+        }
+
+
         if (!Objects.isNull(getCanvasHandler())) {
             if (event.getIdentifiers().size() == 1) {
                 final String uuid = event.getIdentifiers().iterator().next();
                 final Element<? extends Definition<?>> element = CanvasLayoutUtils.getElement(getCanvasHandler(), uuid);
-                render(element);
+                if (event.isScheduleFormRendering()) {
+                    final Timer timer = new Timer() { // GPS FIX
+                        @Override
+                        public void run() {
+                            GWT.log("Timer");
+                            GWT.log("FormCanvasSessionHandler: Timer Rendering Form for element : " + element.toString());
+                            render(element);
+                        }
+                    };
+
+                    timer.schedule(100);
+                } else {
+                    render(element);
+                }
             }
         }
     }
@@ -251,6 +274,15 @@ public class FormsCanvasSessionHandler {
                                                                   domainObject,
                                                                   callback));
         }
+    }
+
+    private boolean checkCanvasHandler(final CanvasHandler ch) {
+        AbstractCanvasHandler canvasHandler = getCanvasHandler();
+        return !Objects.isNull(canvasHandler) && canvasHandler.equals(ch);
+    }
+
+    private boolean checkSession(final ClientSession s) {
+        return checkCanvasHandler(s.getCanvasHandler());
     }
 
     /**

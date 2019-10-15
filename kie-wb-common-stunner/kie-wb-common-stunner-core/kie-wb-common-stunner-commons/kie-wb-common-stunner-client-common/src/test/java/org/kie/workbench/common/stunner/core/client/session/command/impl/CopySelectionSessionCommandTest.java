@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.workbench.common.stunner.core.TestingGraphInstanceBuilder;
 import org.kie.workbench.common.stunner.core.TestingGraphMockHandler;
+import org.kie.workbench.common.stunner.core.client.api.SessionManager;
 import org.kie.workbench.common.stunner.core.client.canvas.AbstractCanvas;
 import org.kie.workbench.common.stunner.core.client.canvas.controls.ClipboardControl;
 import org.kie.workbench.common.stunner.core.client.canvas.controls.SelectionControl;
@@ -54,6 +55,9 @@ public class CopySelectionSessionCommandTest extends BaseSessionCommandKeyboardS
     @Mock
     private EventSourceMock<CopySelectionSessionCommandExecutedEvent> commandExecutedEvent;
 
+    @Mock
+    private SessionManager sessionManager;
+
     private ArgumentCaptor<CopySelectionSessionCommandExecutedEvent> eventArgumentCaptor;
 
     private ClipboardControl<Element, AbstractCanvas, ClientSession> clipboardControl;
@@ -84,6 +88,7 @@ public class CopySelectionSessionCommandTest extends BaseSessionCommandKeyboardS
         when(session.getCanvasHandler()).thenReturn(canvasHandler);
         when(canvasHandler.getGraphIndex()).thenReturn(graphMockHandler.graphIndex);
         when(session.getClipboardControl()).thenReturn(clipboardControl);
+        when(sessionManager.getCurrentSession()).thenReturn(session);
     }
 
     @Test
@@ -193,7 +198,7 @@ public class CopySelectionSessionCommandTest extends BaseSessionCommandKeyboardS
 
     @Override
     protected CopySelectionSessionCommand getCommand() {
-        return new CopySelectionSessionCommand(commandExecutedEvent);
+        return CopySelectionSessionCommand.getInstance(commandExecutedEvent, sessionManager);
     }
 
     @Override
