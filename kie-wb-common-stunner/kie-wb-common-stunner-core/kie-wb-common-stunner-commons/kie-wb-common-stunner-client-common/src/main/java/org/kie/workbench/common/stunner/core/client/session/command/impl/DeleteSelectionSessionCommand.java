@@ -91,7 +91,7 @@ public class DeleteSelectionSessionCommand extends AbstractSelectionAwareSession
     }
 
     public static DeleteSelectionSessionCommand getInstance(SessionManager sessionManager) {
-        return (DeleteSelectionSessionCommand) SessionSingletonCommandsFactory.getInstanceDelete(null, null, null, null, sessionManager);
+        return  SessionSingletonCommandsFactory.getInstanceDelete(null, null, null, null, sessionManager);
     }
 
     public static DeleteSelectionSessionCommand getInstance(final SessionCommandManager<AbstractCanvasHandler> sessionCommandManager,
@@ -100,7 +100,7 @@ public class DeleteSelectionSessionCommand extends AbstractSelectionAwareSession
                                                             final DefinitionUtils definitionUtils,
                                                             final SessionManager sessionmanager) {
 
-        return (DeleteSelectionSessionCommand) SessionSingletonCommandsFactory.getInstanceDelete(sessionCommandManager, canvasCommandFactoryInstance, clearSelectionEvent, definitionUtils, sessionmanager);
+        return SessionSingletonCommandsFactory.getInstanceDelete(sessionCommandManager, canvasCommandFactoryInstance, clearSelectionEvent, definitionUtils, sessionmanager);
     }
 
     @Override

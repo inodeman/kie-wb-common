@@ -32,28 +32,33 @@ import org.kie.workbench.common.stunner.core.client.session.impl.EditorSession;
 import org.kie.workbench.common.stunner.core.util.DefinitionUtils;
 
 @Singleton
+/**
+ * The purpose of this class is to have only one copy of Copy, Delete per Client Session.
+ * An alternate easier aproach was tried with @Produces on those classes, but the issue is that @Produces Factory from erray does not generate
+ * Decorators for @Observes extension and the result was that commands created using @Produces did not listen for Events
+ */
 public class SessionSingletonCommandsFactory {
 
     private static HashMap<ClientSession, CopySelectionSessionCommand> copySessionInstances = new HashMap<>();
 
     private static HashMap<ClientSession, DeleteSelectionSessionCommand> deleteSessionInstances = new HashMap<>();
 
-    public static void createOrPut(AbstractSelectionAwareSessionCommand<EditorSession> aClass, SessionManager sessionManager) {
+    public static void createOrPut(AbstractSelectionAwareSessionCommand<EditorSession> command, SessionManager sessionManager) {
 
-        if (aClass instanceof CopySelectionSessionCommand) {
+        if (command instanceof CopySelectionSessionCommand) {
             if (copySessionInstances.containsKey(sessionManager.getCurrentSession())) { // there is one already one
                 throw new IllegalStateException("Only one instance per Client Session can exist");
             }
-            copySessionInstances.put(sessionManager.getCurrentSession(), (CopySelectionSessionCommand) aClass);
-        } else if (aClass instanceof DeleteSelectionSessionCommand) {
+            copySessionInstances.put(sessionManager.getCurrentSession(), (CopySelectionSessionCommand) command);
+        } else if (command instanceof DeleteSelectionSessionCommand) {
             if (deleteSessionInstances.containsKey(sessionManager.getCurrentSession())) { // there is one already one
                 throw new IllegalStateException("Only one instance per Client Session can exist");
             }
-            deleteSessionInstances.put(sessionManager.getCurrentSession(), (DeleteSelectionSessionCommand) aClass);
+            deleteSessionInstances.put(sessionManager.getCurrentSession(), (DeleteSelectionSessionCommand) command);
         }
     }
 
-    public static AbstractSelectionAwareSessionCommand<EditorSession> getInstanceCopy(
+    public static CopySelectionSessionCommand getInstanceCopy(
             final Event<?> commandExecutedEvent,
             SessionManager sessionManager) {
 
@@ -66,7 +71,7 @@ public class SessionSingletonCommandsFactory {
         return copySessionInstances.get(currentSession);
     }
 
-    public static AbstractSelectionAwareSessionCommand<EditorSession> getInstanceDelete(
+    public static DeleteSelectionSessionCommand getInstanceDelete(
             final SessionCommandManager<AbstractCanvasHandler> sessionCommandManager,
             final ManagedInstance<CanvasCommandFactory<AbstractCanvasHandler>> canvasCommandFactoryInstance,
             final Event<CanvasClearSelectionEvent> clearSelectionEvent,

@@ -212,7 +212,6 @@ public class PasteSelectionSessionCommand extends AbstractClientSessionCommand<E
     public static boolean improveMoving = false; // GPS FIX
 
     public static boolean isLocked() {
-        GWT.log("Checking Is Locked");
         if (CanvasSelectionEvent.improvePerformance) {
             GWT.log("Paste Flag: " + pasteFlag + " Skip Preview: " + skipPreview + " Skip Canvas Loading: " + skipCanvasLoading + " Improve Moving: " + improveMoving);
             return pasteFlag || skipPreview || skipCanvasLoading || improveMoving;

@@ -77,11 +77,11 @@ public class CopySelectionSessionCommand extends AbstractSelectionAwareSessionCo
     }
 
     public static CopySelectionSessionCommand getInstance(SessionManager sessionManager) {
-        return (CopySelectionSessionCommand) SessionSingletonCommandsFactory.getInstanceCopy(null, sessionManager);
+        return SessionSingletonCommandsFactory.getInstanceCopy(null, sessionManager);
     }
 
     public static CopySelectionSessionCommand getInstance(final Event<CopySelectionSessionCommandExecutedEvent> commandExecutedEvent, SessionManager sessionManager) {
-        return (CopySelectionSessionCommand) SessionSingletonCommandsFactory.getInstanceCopy(commandExecutedEvent, sessionManager);
+        return  SessionSingletonCommandsFactory.getInstanceCopy(commandExecutedEvent, sessionManager);
     }
 
     @Override

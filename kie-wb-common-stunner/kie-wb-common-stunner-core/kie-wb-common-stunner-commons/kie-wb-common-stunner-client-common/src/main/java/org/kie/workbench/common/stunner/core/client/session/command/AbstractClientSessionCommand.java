@@ -19,7 +19,6 @@ import java.lang.annotation.Annotation;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.google.gwt.core.client.GWT;
 import org.jboss.errai.ioc.client.api.ManagedInstance;
 import org.kie.workbench.common.stunner.core.client.canvas.AbstractCanvasHandler;
 import org.kie.workbench.common.stunner.core.client.canvas.CanvasHandler;
@@ -42,15 +41,11 @@ public abstract class AbstractClientSessionCommand<S extends ClientSession> impl
     private boolean enabled;
 
     public AbstractClientSessionCommand(final boolean enabled) {
-        GWT.log("AbstractClientSessionCommand Enabled: " + enabled + " - class: " + this.getClass());
-
         this.enabled = enabled;
     }
 
     @Override
     public void bind(final S session) {
-        GWT.log("Binding Session: " + session);
-        GWT.log("Binding Class: " + this.getClass());
         this.session = session;
     }
 
@@ -60,7 +55,6 @@ public abstract class AbstractClientSessionCommand<S extends ClientSession> impl
         final Diagram diagram = session.getCanvasHandler().getDiagram();
         final String id = diagram.getMetadata().getDefinitionSetId();
         final Annotation qualifier = definitionUtils.getQualifier(id);
-        GWT.log("Canvas Command Factory: " + qualifier);
         return InstanceUtils.lookup(canvasCommandFactoryInstance, qualifier);
     }
 
@@ -68,13 +62,11 @@ public abstract class AbstractClientSessionCommand<S extends ClientSession> impl
 
     @Override
     public ClientSessionCommand<S> listen(final Command statusCallback) {
-        GWT.log("Listen :" + statusCallback);
         this.statusCallback = statusCallback;
         return this;
     }
 
     public void execute() {
-        GWT.log("Execute on ACSC: " + this.getClass());
         this.execute(new Callback<Object>() {
             @Override
             public void onSuccess() {
