@@ -95,6 +95,7 @@ public abstract class AbstractCanvasInlineTextEditorControl
     protected double scrollBarOffset;
     protected double paletteOffsetX;
     protected double innerBoxOffsetY;
+    protected EditorSession session;
 
     protected abstract FloatingView<IsWidget> getFloatingView();
 
@@ -111,6 +112,7 @@ public abstract class AbstractCanvasInlineTextEditorControl
     public void bind(final EditorSession session) {
         session.getKeyboardControl().addKeyShortcutCallback(new KogitoKeyPress(new Key[]{ESC}, "Edit | Hide", this::hide));
         session.getKeyboardControl().addKeyShortcutCallback(this::onKeyDownEvent);
+        this.session = session;
     }
 
     @Override
@@ -167,6 +169,10 @@ public abstract class AbstractCanvasInlineTextEditorControl
                                     clickHandler);
         registerHandler(shape.getUUID(),
                         clickHandler);
+
+        if (session.getSelectionControl().getSelectedItems().size() <= 1) {
+            scheduleDeferredCommand(() -> AbstractCanvasInlineTextEditorControl.this.show(element));
+        }
     }
 
     private void changeMouseCursorOnTextEnter(final Shape<?> shape, final HasEventHandlers hasEventHandlers) {

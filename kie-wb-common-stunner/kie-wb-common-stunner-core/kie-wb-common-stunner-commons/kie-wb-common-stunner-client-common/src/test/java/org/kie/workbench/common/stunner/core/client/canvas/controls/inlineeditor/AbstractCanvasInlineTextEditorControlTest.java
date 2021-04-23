@@ -25,6 +25,7 @@ import org.kie.workbench.common.forms.adf.definitions.DynamicReadOnly;
 import org.kie.workbench.common.stunner.core.client.canvas.AbstractCanvas;
 import org.kie.workbench.common.stunner.core.client.canvas.AbstractCanvasHandler;
 import org.kie.workbench.common.stunner.core.client.canvas.Transform;
+import org.kie.workbench.common.stunner.core.client.canvas.controls.SelectionControl;
 import org.kie.workbench.common.stunner.core.client.canvas.controls.keyboard.KeyboardControl;
 import org.kie.workbench.common.stunner.core.client.canvas.event.selection.CanvasSelectionEvent;
 import org.kie.workbench.common.stunner.core.client.command.RequiresCommandManager;
@@ -146,6 +147,9 @@ public abstract class AbstractCanvasInlineTextEditorControlTest<C extends Abstra
     protected HasTitle hasTitle;
 
     @Mock
+    protected SelectionControl selectionControl;
+
+    @Mock
     protected RequiresCommandManager.CommandManagerProvider<AbstractCanvasHandler> commandManagerProvider;
 
     protected Bounds shapeViewBounds = Bounds.create();
@@ -199,6 +203,7 @@ public abstract class AbstractCanvasInlineTextEditorControlTest<C extends Abstra
         when(shape.getUUID()).thenReturn(UUID);
         when(shape.getShapeView()).thenReturn(testShapeView);
         when(session.getKeyboardControl()).thenReturn(keyboardControl);
+        when(session.getSelectionControl()).thenReturn(selectionControl);
 
         this.control = spy(getControl());
 
@@ -323,6 +328,20 @@ public abstract class AbstractCanvasInlineTextEditorControlTest<C extends Abstra
 
         final TextDoubleClickHandler textDoubleClickHandler = textDoubleClickHandlerCaptor.getValue();
         textDoubleClickHandler.handle(new TextDoubleClickEvent(0, 1, SHAPE_X, SHAPE_Y));
+        verify(control, times(2)).show(eq(element));
+    }
+
+    @Test
+    public void testEditOnRegister() {
+        initCanvas(CANVAS_X, CANVAS_Y, CANVAS_WIDTH, CANVAS_HEIGHT);
+        initShape(SHAPE_X, SHAPE_Y, SCROLL_X, SCROLL_Y, ZOOM);
+        initHasTitle(POSITION_INSIDE, ORIENTATION_HORIZONTAL, FONT_FAMILY, ALIGN_MIDDLE, FONT_SIZE, 0);
+        control.bind(session);
+        control.init(canvasHandler);
+
+        when(testShapeView.supports(ViewEventType.TEXT_DBL_CLICK)).thenReturn(true);
+
+        control.register(element);
         verify(control).show(eq(element));
     }
 

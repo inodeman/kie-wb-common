@@ -82,6 +82,9 @@ public class InlineTextEditorBoxViewImplTest {
     @Mock
     private Command hideCommand;
 
+    @Mock
+    private org.jboss.errai.common.client.dom.HTMLElement parentElement;
+
     private InlineTextEditorBoxViewImpl tested;
 
     @Before
@@ -91,6 +94,7 @@ public class InlineTextEditorBoxViewImplTest {
         this.tested.init(presenter);
         when(editNameBox.getStyle()).thenReturn(editNameBoxStyle);
         when(nameField.getStyle()).thenReturn(nameFieldStyle);
+        when(editNameBox.getParentElement()).thenReturn(parentElement);
         doAnswer(i -> {
             ((Scheduler.ScheduledCommand) i.getArguments()[0]).execute();
             return null;
@@ -283,6 +287,17 @@ public class InlineTextEditorBoxViewImplTest {
                                       InlineTextEditorBoxViewImpl.DEFAULT_FONT_FAMILY,
                                       InlineTextEditorBoxViewImpl.DEFAULT_FONT_SIZE),
                      tested.buildStyle(BOX_WIDTH, BOX_HEIGHT));
+    }
+
+    @Test
+    public void testSelectedTextOnEdit() {
+        tested.setTextBoxInternalAlignment(ALIGN_MIDDLE);
+        tested.show("Task", BOX_WIDTH, BOX_HEIGHT);
+
+        verify(nameField,
+               times(1)).setTextContent(eq("Task"));
+        verify(showCommand, times(1)).execute();
+        verify(tested, times(1)).selectText(any());
     }
 
     @Test
